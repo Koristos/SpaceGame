@@ -1,6 +1,5 @@
 package ru.fefelov.screen.impl;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -8,50 +7,31 @@ import com.badlogic.gdx.math.Vector2;
 import ru.fefelov.math.Rect;
 import ru.fefelov.screen.BaseScreen;
 import ru.fefelov.sprite.impl.Background;
-import ru.fefelov.sprite.impl.ButtonPlay;
-import ru.fefelov.sprite.impl.ButtonQuit;
 import ru.fefelov.sprite.impl.Star;
-import ru.fefelov.sprite.impl.Title;
-import ru.fefelov.sprite.impl.Ufo;
 
-public class MenuScreen extends BaseScreen {
 
-    private final Game game;
+public class GameScreen extends BaseScreen {
 
     private Texture backgroundPict;
-    private Texture img2;
     private Vector2 position;
     private Background background;
-    private Ufo ufo;
 
     private TextureAtlas atlas;
 
     private final String[] textureNameArray = new String[]{"Star2", "Star4", "Star6", "Star7", "Star8"};
     private Star[] stars;
-    private ButtonPlay buttonPlay;
-    private ButtonQuit buttonQuit;
-    private Title title;
-
-    public MenuScreen(Game game) {
-        this.game = game;
-    }
 
     @Override
     public void show() {
         super.show();
         backgroundPict = new Texture("background.jpg");
         atlas = new TextureAtlas("menu.pack");
-        img2 = new Texture("ufo.png");
         position = new Vector2();
         background = new Background(backgroundPict);
-        ufo = new Ufo(img2,false);
         stars = new Star[256];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlas, textureNameArray);
         }
-        buttonPlay = new ButtonPlay(atlas, this.game);
-        buttonQuit = new ButtonQuit(atlas);
-        title = new Title(atlas);
     }
 
     @Override
@@ -65,10 +45,6 @@ public class MenuScreen extends BaseScreen {
         for (Star star : stars) {
             star.draw(batch);
         }
-        buttonPlay.draw(batch);
-        buttonQuit.draw(batch);
-        title.draw(batch);
-        ufo.draw(batch);
         batch.end();
     }
 
@@ -76,7 +52,6 @@ public class MenuScreen extends BaseScreen {
     public void dispose() {
         super.dispose();
         backgroundPict.dispose();
-        img2.dispose();
         atlas.dispose();
     }
 
@@ -87,26 +62,17 @@ public class MenuScreen extends BaseScreen {
         for (Star star : stars) {
             star.resize(worldBounds);
         }
-        ufo.resize(worldBounds);
-        buttonPlay.resize(worldBounds);
-        buttonQuit.resize(worldBounds);
-        title.resize(worldBounds);
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         position.set(touch);
-        ufo.touchDown(touch, pointer, button);
-        buttonPlay.touchDown(touch, pointer, button);
-        buttonQuit.touchDown(touch, pointer, button);
         return super.touchDown(touch, pointer, button);
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
         position.set(touch);
-        buttonPlay.touchUp(touch, pointer, button);
-        buttonQuit.touchUp(touch, pointer, button);
         return super.touchUp(touch, pointer, button);
     }
 }

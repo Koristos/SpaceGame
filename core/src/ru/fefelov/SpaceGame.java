@@ -7,6 +7,6 @@ import ru.fefelov.screen.impl.MenuScreen;
 public class SpaceGame extends Game {
 	@Override
 	public void create() {
-		setScreen(new MenuScreen());
+		setScreen(new MenuScreen(this));
 	}
 }
