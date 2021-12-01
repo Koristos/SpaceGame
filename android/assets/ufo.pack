@@ -1,0 +1,26 @@
+
+ufo.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+ufo
+  rotate: false
+  xy: 1, 503
+  size: 2484, 1304
+  orig: 2484, 1304
+  offset: 0, 0
+  index: -1
+comet
+  rotate: false
+  xy: 1, 1
+  size: 500, 500
+  orig: 500, 500
+  offset: 0, 0
+  index: -1
+cometEmpty
+  rotate: false
+  xy: 2487, 1622
+  size: 206, 185
+  orig: 206, 185
+  offset: 0, 0
+  index: -1

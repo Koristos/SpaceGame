@@ -19,12 +19,12 @@ public class MenuScreen extends BaseScreen {
     private final Game game;
 
     private Texture backgroundPict;
-    private Texture img2;
     private Vector2 position;
     private Background background;
     private Ufo ufo;
 
     private TextureAtlas atlas;
+    private TextureAtlas ufoAtlas;
 
     private final String[] textureNameArray = new String[]{"Star2", "Star4", "Star6", "Star7", "Star8"};
     private Star[] stars;
@@ -41,10 +41,10 @@ public class MenuScreen extends BaseScreen {
         super.show();
         backgroundPict = new Texture("background.jpg");
         atlas = new TextureAtlas("menu.pack");
-        img2 = new Texture("ufo.png");
+        ufoAtlas = new TextureAtlas("ufo.pack");
         position = new Vector2();
         background = new Background(backgroundPict);
-        ufo = new Ufo(img2,false);
+        ufo = new Ufo(ufoAtlas,false);
         stars = new Star[256];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlas, textureNameArray);
@@ -76,7 +76,7 @@ public class MenuScreen extends BaseScreen {
     public void dispose() {
         super.dispose();
         backgroundPict.dispose();
-        img2.dispose();
+        ufoAtlas.dispose();
         atlas.dispose();
     }
 
@@ -96,7 +96,6 @@ public class MenuScreen extends BaseScreen {
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         position.set(touch);
-        ufo.touchDown(touch, pointer, button);
         buttonPlay.touchDown(touch, pointer, button);
         buttonQuit.touchDown(touch, pointer, button);
         return super.touchDown(touch, pointer, button);

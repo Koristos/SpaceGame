@@ -1,31 +1,60 @@
 package ru.fefelov.sprite.impl;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import ru.fefelov.math.Rect;
 import ru.fefelov.sprite.Sprite;
 
 public class Ufo extends Sprite {
 
-    private final float SPEED = 0.005f;
-    private final float HEIGHT = 0.2f;
+    private final float SPEED = 0.004f;
+    private final float MENU_HEIGHT = 0.2f;
+    private final float GAME_MODE_HEIGHT = 0.08f;
+    private final float SCALE = 0.99f;
 
     private Vector2 destination = new Vector2();
     static Vector2 move = new Vector2();
-    private boolean enabled;
+    private boolean enabled = false;
+    private boolean gameMode;
+    private Rect worldBounds;
+    private Map<String, UfoMoveFlame> flames = new HashMap<>();
+    private boolean forwardPressed = false;
+    private boolean backPressed = false;
+    private boolean goLeftPressed = false;
+    private boolean goRightPressed = false;
 
 
-    public Ufo(Texture texture, boolean isEnabled) {
-        super(new TextureRegion(texture));
-        this.enabled = isEnabled;
+    public Ufo(TextureAtlas atlas, boolean isGameMode) {
+        super(atlas.findRegion("ufo"));
+        this.gameMode = isGameMode;
+        this.flames.put("left", new UfoMoveFlame(atlas, UfoMoveFlame.DIRECTION.LEFT));
+        this.flames.put("right", new UfoMoveFlame(atlas, UfoMoveFlame.DIRECTION.RIGHT));
+        this.flames.put("center", new UfoMoveFlame(atlas, UfoMoveFlame.DIRECTION.CENTER));
     }
 
     @Override
-    public void resize(Rect worldBounds) {
-        setHeightProportion(worldBounds.getHeight()*HEIGHT);
+    public void resize(final Rect worldBounds) {
+        this.worldBounds = worldBounds;
+        if (!enabled) {
+            setHeightProportion(worldBounds.getHeight() * MENU_HEIGHT);
+        } else {
+            setHeightProportion(worldBounds.getHeight() * GAME_MODE_HEIGHT);
+        }
+        if (gameMode && !enabled) {
+            destination.set(0, worldBounds.getBottom() + GAME_MODE_HEIGHT);
+        }
+
+        for (Map.Entry<String, UfoMoveFlame> entry : flames.entrySet()) {
+            entry.getValue().resize(worldBounds);
+        }
     }
 
     @Override
@@ -37,19 +66,116 @@ public class Ufo extends Sprite {
 
     @Override
     public void draw(SpriteBatch batch) {
-        if (enabled) {
-            calculateMovement(this.pos, this.destination);
+        calculateMovement(this.pos, this.destination);
+        for (Map.Entry<String, UfoMoveFlame> entry : flames.entrySet()) {
+            entry.getValue().setPosition(this.pos);
+            entry.getValue().draw(batch, this.move);
+        }
+        if (!enabled && gameMode) {
+            resizeToGameMode();
+            chekStartPosition();
         }
         super.draw(batch);
     }
 
+    public boolean keyDown(int keycode) {
+        if (enabled){
+            switch (keycode) {
+                case Input.Keys.DPAD_UP:
+                    this.forwardPressed = true;
+                    break;
+                case Input.Keys.DPAD_DOWN:
+                    this.backPressed = true;
+                    break;
+                case Input.Keys.DPAD_LEFT:
+                    this.goLeftPressed = true;
+                    break;
+                case Input.Keys.DPAD_RIGHT:
+                    this.goRightPressed = true;
+                    break;
+            }
+        }
+        return false;
+    }
 
-    private void calculateMovement (Vector2 position, Vector2 destination){
+    public boolean keyUp(int keycode) {
+        switch (keycode) {
+            case Input.Keys.DPAD_UP:
+                this.forwardPressed = false;
+                break;
+            case Input.Keys.DPAD_DOWN:
+                this.backPressed = false;
+                break;
+            case Input.Keys.DPAD_LEFT:
+                this.goLeftPressed = false;
+                break;
+            case Input.Keys.DPAD_RIGHT:
+                this.goRightPressed = false;
+                break;
+        }
+        return false;
+    }
+
+
+    private void calculateMovement(Vector2 position, Vector2 destination) {
+        if (!gameMode){
+            return;
+        }
+        if (forwardPressed || backPressed || goLeftPressed || goRightPressed) {
+            destination.set(position);
+            if (forwardPressed) {
+                destination.y = destination.y + SPEED;
+            }
+            if (backPressed) {
+                destination.y = destination.y - SPEED;
+            }
+            if (goLeftPressed) {
+                destination.x = destination.x - SPEED;
+            }
+            if (goRightPressed) {
+                destination.x = destination.x + SPEED;
+            }
+        }
+        checkBorder(destination);
         move.set(destination);
         move.sub(position);
-        if (move.len()>SPEED){
+        if (move.len() > SPEED) {
             move.nor().scl(SPEED);
         }
         position.add(move);
+    }
+
+    private void resizeToGameMode() {
+        if (getHeight() > GAME_MODE_HEIGHT) {
+            float nextHeight = getHeight() * SCALE;
+            if (nextHeight > GAME_MODE_HEIGHT) {
+                this.setHeightProportion(worldBounds.getHeight() * nextHeight);
+            } else {
+                setHeightProportion(worldBounds.getHeight() * GAME_MODE_HEIGHT);
+            }
+        }
+    }
+
+    private void chekStartPosition() {
+        if (getHeight() == GAME_MODE_HEIGHT && this.pos.y == destination.y) {
+            enabled = true;
+        }
+    }
+
+    private void checkBorder(Vector2 destination) {
+        if (destination.x > worldBounds.getRight() - getHalfWidth()) {
+            this.destination.x = worldBounds.getRight() - getHalfWidth();
+        } else if (destination.x < worldBounds.getLeft() + getHalfWidth()) {
+            this.destination.x = worldBounds.getLeft() + getHalfWidth();
+        } else {
+            this.destination.x = destination.x;
+        }
+        if (destination.y > worldBounds.getTop() - getHeight() * 3) {
+            this.destination.y = worldBounds.getTop() - getHeight() * 3;
+        } else if (destination.y < worldBounds.getBottom() + getHalfHeight()) {
+            this.destination.y = worldBounds.getBottom() + getHalfHeight();
+        } else {
+            this.destination.y = destination.y;
+        }
     }
 }

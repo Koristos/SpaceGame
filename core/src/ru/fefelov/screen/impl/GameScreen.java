@@ -8,6 +8,7 @@ import ru.fefelov.math.Rect;
 import ru.fefelov.screen.BaseScreen;
 import ru.fefelov.sprite.impl.Background;
 import ru.fefelov.sprite.impl.Star;
+import ru.fefelov.sprite.impl.Ufo;
 
 
 public class GameScreen extends BaseScreen {
@@ -15,7 +16,9 @@ public class GameScreen extends BaseScreen {
     private Texture backgroundPict;
     private Vector2 position;
     private Background background;
+    private Ufo ufo;
 
+    private TextureAtlas ufoAtlas;
     private TextureAtlas atlas;
 
     private final String[] textureNameArray = new String[]{"Star2", "Star4", "Star6", "Star7", "Star8"};
@@ -25,6 +28,7 @@ public class GameScreen extends BaseScreen {
     public void show() {
         super.show();
         backgroundPict = new Texture("background.jpg");
+        ufoAtlas = new TextureAtlas("ufo.pack");
         atlas = new TextureAtlas("menu.pack");
         position = new Vector2();
         background = new Background(backgroundPict);
@@ -32,6 +36,7 @@ public class GameScreen extends BaseScreen {
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlas, textureNameArray);
         }
+        ufo = new Ufo(ufoAtlas,true);
     }
 
     @Override
@@ -45,6 +50,7 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.draw(batch);
         }
+        ufo.draw(batch);
         batch.end();
     }
 
@@ -53,6 +59,7 @@ public class GameScreen extends BaseScreen {
         super.dispose();
         backgroundPict.dispose();
         atlas.dispose();
+        ufoAtlas.dispose();
     }
 
     @Override
@@ -62,11 +69,13 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.resize(worldBounds);
         }
+        ufo.resize(worldBounds);
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         position.set(touch);
+        ufo.touchDown(touch, pointer, button);
         return super.touchDown(touch, pointer, button);
     }
 
@@ -74,5 +83,17 @@ public class GameScreen extends BaseScreen {
     public boolean touchUp(Vector2 touch, int pointer, int button) {
         position.set(touch);
         return super.touchUp(touch, pointer, button);
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        ufo.keyDown(keycode);
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        ufo.keyUp(keycode);
+        return false;
     }
 }
