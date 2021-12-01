@@ -1,7 +1,9 @@
 package ru.fefelov.mech.impl;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,5 +30,14 @@ public class PlasmGun extends Gun {
         setPool(pool);
         setTextureRegion(atlas.findRegion("plasm"));
         setFirstFrame(1);
+        setSound(Gdx.audio.newSound(Gdx.files.internal("music/plasm.mp3")));
+        Timer timer = new Timer();
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                shoot();
+            }
+        }, 3, 1);
+        setTimer(timer);
     }
 }

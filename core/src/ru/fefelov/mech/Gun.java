@@ -1,7 +1,9 @@
 package ru.fefelov.mech;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
 
 import ru.fefelov.math.Rect;
 import ru.fefelov.pools.impl.BulletPool;
@@ -22,12 +24,15 @@ public abstract class Gun {
     private int cols;
     private int frames;
     private int firstFrame;
+    private Sound sound;
+    private Timer timer;
 
 
     public void shoot(){
         Bullet bullet = pool.obtain();
         bullet.set(owner, Regions.split(textureRegion, rows, cols, frames), owner.getPosition(),
                 speed, bulletHeight, worldBounds, damage, firstFrame);
+        sound.play();
     };
 
     public void setOwner(Sprite owner) {
@@ -73,4 +78,14 @@ public abstract class Gun {
     public void setFirstFrame(int firstFrame) {
         this.firstFrame = firstFrame;
     }
+
+    public void setSound(Sound sound) {
+        this.sound = sound;
+    }
+
+
+    public void setTimer(Timer timer) {
+        this.timer = timer;
+    }
+
 }

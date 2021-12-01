@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.fefelov.math.Rect;
@@ -14,7 +13,6 @@ import ru.fefelov.screen.BaseScreen;
 import ru.fefelov.sprite.impl.Background;
 import ru.fefelov.sprite.impl.Star;
 import ru.fefelov.sprite.impl.Ufo;
-import ru.fefelov.utils.Regions;
 
 
 public class GameScreen extends BaseScreen {
@@ -30,6 +28,7 @@ public class GameScreen extends BaseScreen {
 
     private final String[] textureNameArray = new String[]{"Star2", "Star4", "Star6", "Star7", "Star8"};
     private Star[] stars;
+    private Music music;
     private BulletPool bulletPool;
 
     @Override
@@ -48,6 +47,9 @@ public class GameScreen extends BaseScreen {
         }
         ufo = new Ufo(ufoAtlas,true);
         ufo.setGun(new PlasmGun(bulletPool, true, bulletAtlas, getWorldBounds(), this.ufo));
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/game.mp3"));
+        music.setLooping(true);
+        music.play();
     }
 
     @Override
@@ -74,6 +76,7 @@ public class GameScreen extends BaseScreen {
         backgroundPict.dispose();
         atlas.dispose();
         ufoAtlas.dispose();
+        music.dispose();
         bulletPool.dispose();
     }
 
