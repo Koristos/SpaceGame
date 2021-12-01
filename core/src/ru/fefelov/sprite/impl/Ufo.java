@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ru.fefelov.math.Rect;
+import ru.fefelov.mech.Gun;
 import ru.fefelov.sprite.Sprite;
 
 public class Ufo extends Sprite {
@@ -30,6 +31,8 @@ public class Ufo extends Sprite {
     private boolean backPressed = false;
     private boolean goLeftPressed = false;
     private boolean goRightPressed = false;
+    private boolean shootingPressed = false;
+    private Gun gun;
 
 
     public Ufo(TextureAtlas atlas, boolean isGameMode) {
@@ -55,6 +58,9 @@ public class Ufo extends Sprite {
         for (Map.Entry<String, UfoMoveFlame> entry : flames.entrySet()) {
             entry.getValue().resize(worldBounds);
         }
+        if (this.gun != null){
+            this.gun.setWorldBounds(worldBounds);
+        }
     }
 
     @Override
@@ -67,6 +73,9 @@ public class Ufo extends Sprite {
     @Override
     public void draw(SpriteBatch batch) {
         calculateMovement(this.pos, this.destination);
+        if (shootingPressed){
+            gun.shoot();
+        }
         for (Map.Entry<String, UfoMoveFlame> entry : flames.entrySet()) {
             entry.getValue().setPosition(this.pos);
             entry.getValue().draw(batch, this.move);
@@ -93,6 +102,9 @@ public class Ufo extends Sprite {
                 case Input.Keys.DPAD_RIGHT:
                     this.goRightPressed = true;
                     break;
+                case Input.Keys.SPACE:
+                    this.shootingPressed = true;
+                    break;
             }
         }
         return false;
@@ -112,10 +124,16 @@ public class Ufo extends Sprite {
             case Input.Keys.DPAD_RIGHT:
                 this.goRightPressed = false;
                 break;
+            case Input.Keys.SPACE:
+                this.shootingPressed = false;
+                break;
         }
         return false;
     }
 
+    public void setGun(Gun gun) {
+        this.gun = gun;
+    }
 
     private void calculateMovement(Vector2 position, Vector2 destination) {
         if (!gameMode){

@@ -1,0 +1,19 @@
+
+bullets.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+bullet
+  rotate: false
+  xy: 1, 771
+  size: 1207, 598
+  orig: 1207, 598
+  offset: 0, 0
+  index: -1
+plasm
+  rotate: false
+  xy: 1, 1
+  size: 960, 768
+  orig: 960, 768
+  offset: 0, 0
+  index: -1

@@ -133,4 +133,8 @@ public class BaseScreen implements Screen, InputProcessor {
     public boolean scrolled(float amountX, float amountY) {
         return false;
     }
+
+    public Rect getWorldBounds() {
+        return worldBounds;
+    }
 }

@@ -1,0 +1,32 @@
+package ru.fefelov.mech.impl;
+
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Vector2;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import ru.fefelov.math.Rect;
+import ru.fefelov.mech.Gun;
+import ru.fefelov.pools.impl.BulletPool;
+import ru.fefelov.sprite.Sprite;
+
+public class PlasmGun extends Gun {
+
+    private final float bulletSpeed = 0.4f;
+
+
+    public PlasmGun(BulletPool pool, boolean isAlly, TextureAtlas atlas, Rect worldbounds, Sprite owner){
+        setDamage(1);
+        setSpeed(new Vector2(0f, isAlly ? bulletSpeed : -bulletSpeed));
+        setRows(4);
+        setCols(5);
+        setFrames(20);
+        setWorldBounds(worldbounds);
+        setBulletHeight(0.15f);
+        setOwner(owner);
+        setPool(pool);
+        setTextureRegion(atlas.findRegion("plasm"));
+        setFirstFrame(1);
+    }
+}
