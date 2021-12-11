@@ -28,6 +28,7 @@ public class ButtonPlay extends BaseButton {
 
     @Override
     public void action() {
+        game.getScreen().dispose();
         game.setScreen(new GameScreen());
     }
 }

@@ -83,6 +83,7 @@ public class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        System.out.println(keycode);
         return false;
     }
 
@@ -131,5 +132,9 @@ public class BaseScreen implements Screen, InputProcessor {
     @Override
     public boolean scrolled(float amountX, float amountY) {
         return false;
+    }
+
+    public Rect getWorldBounds() {
+        return worldBounds;
     }
 }
