@@ -75,6 +75,7 @@ public class Ufo extends Sprite {
         calculateMovement(this.pos, this.destination);
         if (shootingPressed){
             gun.shoot();
+            shootingPressed = false;
         }
         for (Map.Entry<String, UfoMoveFlame> entry : flames.entrySet()) {
             entry.getValue().setPosition(this.pos);
