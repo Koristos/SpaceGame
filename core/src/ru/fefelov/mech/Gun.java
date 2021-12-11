@@ -13,30 +13,38 @@ import ru.fefelov.utils.Regions;
 
 public abstract class Gun {
 
-    private Sprite owner;
-    private BulletPool pool;
-    private TextureRegion textureRegion;
-    private int damage;
-    private Vector2 speed;
-    private float bulletHeight;
-    private Rect worldBounds;
-    private int rows;
-    private int cols;
-    private int frames;
-    private int firstFrame;
-    private Sound sound;
-    private Timer timer;
+    protected Sprite owner;
+    protected BulletPool pool;
+    protected TextureRegion textureRegion;
+    protected int damage;
+    protected Vector2 speed;
+    protected float bulletHeight;
+    protected Rect worldBounds;
+    protected int rows;
+    protected int cols;
+    protected int frames;
+    protected int firstFrame;
+    protected Sound sound;
+    protected Timer timer;
+    protected boolean readyToShoot;
 
 
     public void shoot(){
-        Bullet bullet = pool.obtain();
-        bullet.set(owner, Regions.split(textureRegion, rows, cols, frames), owner.getPosition(),
-                speed, bulletHeight, worldBounds, damage, firstFrame);
-        sound.play();
+        if (readyToShoot){
+            Bullet bullet = pool.obtain();
+            bullet.set(owner, Regions.split(textureRegion, rows, cols, frames), owner.getPosition(),
+                    speed, bulletHeight, worldBounds, damage, firstFrame);
+            sound.play();
+            this.readyToShoot = false;
+        }
     };
 
     public void setOwner(Sprite owner) {
         this.owner = owner;
+    }
+
+    public void disable (){
+        this.timer.clear();
     }
 
     public void setPool(BulletPool pool) {

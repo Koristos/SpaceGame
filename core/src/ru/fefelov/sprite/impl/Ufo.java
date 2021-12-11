@@ -12,9 +12,10 @@ import java.util.Map;
 
 import ru.fefelov.math.Rect;
 import ru.fefelov.mech.Gun;
+import ru.fefelov.sprite.Ship;
 import ru.fefelov.sprite.Sprite;
 
-public class Ufo extends Sprite {
+public class Ufo extends Ship {
 
     private final float SPEED = 0.004f;
     private final float MENU_HEIGHT = 0.2f;
@@ -25,14 +26,12 @@ public class Ufo extends Sprite {
     static Vector2 move = new Vector2();
     private boolean enabled = false;
     private boolean gameMode;
-    private Rect worldBounds;
     private Map<String, UfoMoveFlame> flames = new HashMap<>();
     private boolean forwardPressed = false;
     private boolean backPressed = false;
     private boolean goLeftPressed = false;
     private boolean goRightPressed = false;
     private boolean shootingPressed = false;
-    private Gun gun;
 
 
     public Ufo(TextureAtlas atlas, boolean isGameMode) {
@@ -66,6 +65,9 @@ public class Ufo extends Sprite {
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         if (!enabled) return false;
+        if (isMe(touch)){
+            shoot();
+        }
         this.destination.set(touch);
         return super.touchDown(touch, pointer, button);
     }
@@ -74,7 +76,7 @@ public class Ufo extends Sprite {
     public void draw(SpriteBatch batch) {
         calculateMovement(this.pos, this.destination);
         if (shootingPressed){
-            gun.shoot();
+            shoot();
             shootingPressed = false;
         }
         for (Map.Entry<String, UfoMoveFlame> entry : flames.entrySet()) {
@@ -130,10 +132,6 @@ public class Ufo extends Sprite {
                 break;
         }
         return false;
-    }
-
-    public void setGun(Gun gun) {
-        this.gun = gun;
     }
 
     private void calculateMovement(Vector2 position, Vector2 destination) {

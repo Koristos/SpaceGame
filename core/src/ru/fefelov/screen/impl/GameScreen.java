@@ -9,10 +9,12 @@ import com.badlogic.gdx.math.Vector2;
 import ru.fefelov.math.Rect;
 import ru.fefelov.mech.impl.PlasmGun;
 import ru.fefelov.pools.impl.BulletPool;
+import ru.fefelov.pools.impl.EnemyPool;
 import ru.fefelov.screen.BaseScreen;
 import ru.fefelov.sprite.impl.Background;
 import ru.fefelov.sprite.impl.Star;
 import ru.fefelov.sprite.impl.Ufo;
+import ru.fefelov.utils.EnemyEmitter;
 
 
 public class GameScreen extends BaseScreen {
@@ -25,11 +27,14 @@ public class GameScreen extends BaseScreen {
     private TextureAtlas ufoAtlas;
     private TextureAtlas atlas;
     private TextureAtlas bulletAtlas;
+    private TextureAtlas enemyAtlas;
 
     private final String[] textureNameArray = new String[]{"Star2", "Star4", "Star6", "Star7", "Star8"};
     private Star[] stars;
     private Music music;
     private BulletPool bulletPool;
+    private EnemyEmitter enemyEmitter;
+    private EnemyPool enemyPool;
 
     @Override
     public void show() {
@@ -38,7 +43,12 @@ public class GameScreen extends BaseScreen {
         ufoAtlas = new TextureAtlas("ufo.pack");
         atlas = new TextureAtlas("menu.pack");
         bulletAtlas = new TextureAtlas("bullets.pack");
+        enemyAtlas = new TextureAtlas("enemy.pack");
         bulletPool = new BulletPool();
+
+        enemyPool = new EnemyPool(getWorldBounds());
+        enemyEmitter = new EnemyEmitter(enemyAtlas, getWorldBounds(), enemyPool, bulletPool, bulletAtlas);
+
         position = new Vector2();
         background = new Background(backgroundPict);
         stars = new Star[256];
@@ -58,15 +68,20 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.update(delta);
         }
+        bulletPool.updateActiveSprites(delta);
+        enemyPool.updateActiveSprites(delta);
+        enemyEmitter.generate(delta);
+        bulletPool.freeAllDestroyed();
+        enemyPool.freeAllDestroyed();
+
         batch.begin();
         background.draw(batch);
         for (Star star : stars) {
             star.draw(batch);
         }
         ufo.draw(batch);
-        bulletPool.updateActiveSprites(delta);
+        enemyPool.drawActiveSprites(batch);
         bulletPool.drawActiveSprites(batch);
-        bulletPool.freeAllDestroyed();
         batch.end();
     }
 
@@ -78,6 +93,8 @@ public class GameScreen extends BaseScreen {
         ufoAtlas.dispose();
         music.dispose();
         bulletPool.dispose();
+        bulletAtlas.dispose();
+        enemyAtlas.dispose();
     }
 
     @Override
