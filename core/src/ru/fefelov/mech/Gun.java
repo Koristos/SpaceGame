@@ -27,13 +27,16 @@ public abstract class Gun {
     protected Sound sound;
     protected Timer timer;
     protected boolean readyToShoot;
+    protected float blowSizeCoef;
+    protected Sound hitSound;
+
 
 
     public void shoot(){
         if (readyToShoot){
             Bullet bullet = pool.obtain();
             bullet.set(owner, Regions.split(textureRegion, rows, cols, frames), owner.getPosition(),
-                    speed, bulletHeight, worldBounds, damage, firstFrame);
+                    speed, bulletHeight, worldBounds, damage, firstFrame, blowSizeCoef, hitSound);
             sound.play();
             this.readyToShoot = false;
         }
@@ -96,4 +99,11 @@ public abstract class Gun {
         this.timer = timer;
     }
 
+    public void setBlowSizeCoef(float blowSizeCoef) {
+        this.blowSizeCoef = blowSizeCoef;
+    }
+
+    public void setHitSound(Sound hitSound) {
+        this.hitSound = hitSound;
+    }
 }

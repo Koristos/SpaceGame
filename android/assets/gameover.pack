@@ -1,0 +1,26 @@
+
+gameover.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+gameover
+  rotate: false
+  xy: 1, 42
+  size: 394, 113
+  orig: 394, 113
+  offset: 0, 0
+  index: -1
+newgame2
+  rotate: false
+  xy: 397, 1
+  size: 300, 154
+  orig: 300, 154
+  offset: 0, 0
+  index: -1
+newgame1
+  rotate: false
+  xy: 699, 14
+  size: 298, 141
+  orig: 298, 141
+  offset: 0, 0
+  index: -1

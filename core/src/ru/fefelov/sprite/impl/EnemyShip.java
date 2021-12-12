@@ -23,13 +23,23 @@ public class EnemyShip extends Ship {
 
     @Override
     public void update(float delta) {
-        calculateMove();
-        this.pos.mulAdd(move, delta);
-        if (isOutside(worldBounds)) {
-            destroy();
-            this.gun.disable();
+        if (isBlowing){
+            if (this.frame < this.explosions.length-1){
+                frame++;
+            } else {
+               this.destroy();
+            }
+        }else {
+            calculateMove();
+            this.pos.mulAdd(move, delta);
+            if (isOutside(worldBounds)) {
+                destroy();
+                this.gun.disable();
+            }
+            if (this.getTop()< worldBounds.getTop()){
+                shoot();
+            }
         }
-        shoot();
     }
 
     @Override
@@ -38,19 +48,23 @@ public class EnemyShip extends Ship {
     }
 
     public void setProp(Vector2 speed,
-                    int moveType,
-                    TextureRegion region,
-                    float height,
-                    int hp,
-                    Gun gun
+                        int moveType,
+                        TextureRegion region,
+                        float height,
+                        int hp,
+                        Gun gun,
+                        TextureRegion[] explosion
     ) {
         this.speed = speed;
         this.moveType = moveType;
-        TextureRegion [] regions = new TextureRegion[1];
-        this.regions [0] = region;
+        this.regions = new TextureRegion[1];
+        this.regions[0] = region;
+        this.frame = 0;
         setHeightProportion(height);
         this.hp = hp;
         this.gun = gun;
+        this.explosions = explosion;
+        this.isBlowing = false;
     }
 
     private void calculateMove(){

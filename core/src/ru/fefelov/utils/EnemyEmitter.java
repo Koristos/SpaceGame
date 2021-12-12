@@ -1,6 +1,9 @@
 package ru.fefelov.utils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -18,19 +21,30 @@ public class EnemyEmitter {
     private TextureAtlas enemyAtlas;
     private BulletPool bulletPool;
     private TextureAtlas bulletAtlas;
+    private TextureRegion [] explosions;
 
     private static final float GENERATE_INTERVAL = 4f;
     private float generateTimer;
+    private boolean working;
 
-    public EnemyEmitter(TextureAtlas enemyAtlas, Rect worldBounds, EnemyPool enemyPool, BulletPool bulletPool, TextureAtlas bulletAtlas) {
+    private final Sound BOSS_SHOOT = Gdx.audio.newSound(Gdx.files.internal("music/fire2.mp3"));
+    private final Sound ENEMY_SHOOT = Gdx.audio.newSound(Gdx.files.internal("music/fire1.mp3"));
+    private final Sound ENEMY_HIT = Gdx.audio.newSound(Gdx.files.internal("music/fireDamage.mp3"));
+
+    public EnemyEmitter(TextureAtlas enemyAtlas, Rect worldBounds, EnemyPool enemyPool, BulletPool bulletPool, TextureAtlas bulletAtlas, TextureRegion explosion) {
         this.worldBounds = worldBounds;
         this.enemyPool = enemyPool;
         this.bulletPool = bulletPool;
         this.enemyAtlas = enemyAtlas;
         this.bulletAtlas = bulletAtlas;
+        this.explosions = Regions.split(explosion, 6, 8, 48);
+        this.working = true;
     }
 
     public void generate(float delta) {
+        if (!working){
+            return;
+        }
         generateTimer += delta;
         if (generateTimer > GENERATE_INTERVAL) {
             generateTimer = 0f;
@@ -48,7 +62,10 @@ public class EnemyEmitter {
                                 false,
                                 bulletAtlas,
                                 worldBounds,
-                                enemyShip)
+                                enemyShip,
+                                ENEMY_SHOOT,
+                                ENEMY_HIT),
+                        explosions
                 );
             } else if (type < 0.4f) {
                 enemyShip.setProp(
@@ -56,12 +73,15 @@ public class EnemyEmitter {
                         1,
                         enemyAtlas.findRegion("enemy2"),
                         0.08f,
-                        1,
+                        2,
                         new FireGun(bulletPool,
                                 false,
                                 bulletAtlas,
                                 worldBounds,
-                                enemyShip)
+                                enemyShip,
+                                ENEMY_SHOOT,
+                                ENEMY_HIT),
+                        explosions
                 );
             } else if (type < 0.6f){
                 enemyShip.setProp(
@@ -69,12 +89,15 @@ public class EnemyEmitter {
                         2,
                         enemyAtlas.findRegion("enemy4"),
                         0.08f,
-                        1,
+                        3,
                         new FireGun(bulletPool,
                                 false,
                                 bulletAtlas,
                                 worldBounds,
-                                enemyShip)
+                                enemyShip,
+                                ENEMY_SHOOT,
+                                ENEMY_HIT),
+                        explosions
                 );
             }else if (type < 0.75f) {
                 enemyShip.setProp(
@@ -82,12 +105,15 @@ public class EnemyEmitter {
                         1,
                         enemyAtlas.findRegion("enemy5"),
                         0.11f,
-                        3,
+                        5,
                         new BigFireGun(bulletPool,
                                 false,
                                 bulletAtlas,
                                 worldBounds,
-                                enemyShip)
+                                enemyShip,
+                                ENEMY_SHOOT,
+                                ENEMY_HIT),
+                        explosions
                 );
             } else if (type < 0.9f) {
                 enemyShip.setProp(
@@ -95,12 +121,15 @@ public class EnemyEmitter {
                         1,
                         enemyAtlas.findRegion("enemy6"),
                         0.11f,
-                        3,
+                        5,
                         new BigFireGun(bulletPool,
                                 false,
                                 bulletAtlas,
                                 worldBounds,
-                                enemyShip)
+                                enemyShip,
+                                ENEMY_SHOOT,
+                                ENEMY_HIT),
+                        explosions
                 );
             } else {
                 enemyShip.setProp(
@@ -108,12 +137,15 @@ public class EnemyEmitter {
                         2,
                         enemyAtlas.findRegion("enemy7"),
                         0.2f,
-                        5,
+                        10,
                         new BossFireGun(bulletPool,
                                 false,
                                 bulletAtlas,
                                 worldBounds,
-                                enemyShip)
+                                enemyShip,
+                                BOSS_SHOOT,
+                                ENEMY_HIT),
+                        explosions
                 );
             }
             enemyShip.setBottom(worldBounds.getTop());
@@ -122,5 +154,14 @@ public class EnemyEmitter {
                     worldBounds.getRight() - enemyShip.getWidth()
             );
         }
+    }
+
+    public void stop(){
+        this.working = false;
+    }
+
+    public void start(){
+        generateTimer = 0f;
+        this.working = true;
     }
 }

@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.logging.StreamHandler;
+
 import ru.fefelov.math.Rect;
 import ru.fefelov.screen.BaseScreen;
 import ru.fefelov.sprite.impl.Background;
@@ -47,7 +49,7 @@ public class MenuScreen extends BaseScreen {
         ufoAtlas = new TextureAtlas("ufo.pack");
         position = new Vector2();
         background = new Background(backgroundPict);
-        ufo = new Ufo(ufoAtlas,false);
+        ufo = new Ufo(ufoAtlas,false, null);
         stars = new Star[256];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlas, textureNameArray);

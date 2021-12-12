@@ -1,6 +1,6 @@
 package ru.fefelov.mech.impl;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
@@ -15,7 +15,7 @@ public class BigFireGun extends Gun {
     private final float bulletSpeed = 0.14f;
 
 
-    public BigFireGun (BulletPool pool, boolean isAlly, TextureAtlas atlas, Rect worldbounds, Sprite owner){
+    public BigFireGun (BulletPool pool, boolean isAlly, TextureAtlas atlas, Rect worldbounds, Sprite owner, Sound shootSound, Sound hitSound){
         setDamage(1);
         setSpeed(new Vector2(0f, isAlly ? bulletSpeed : -bulletSpeed));
         setRows(4);
@@ -27,7 +27,8 @@ public class BigFireGun extends Gun {
         setPool(pool);
         setTextureRegion(atlas.findRegion("bullet"));
         setFirstFrame(0);
-        setSound(Gdx.audio.newSound(Gdx.files.internal("music/plasm.mp3")));
+        setSound(shootSound);
+        setBlowSizeCoef(1.15f);
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task() {
             @Override
@@ -38,5 +39,6 @@ public class BigFireGun extends Gun {
             }
         }, 0, 1.8f);
         setTimer(timer);
+        setHitSound(hitSound);
     }
 }

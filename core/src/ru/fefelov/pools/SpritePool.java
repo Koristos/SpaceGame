@@ -68,4 +68,13 @@ public abstract class SpritePool <T extends Sprite> {
         }
         System.out.println(getClass().getSimpleName() + " active/free : " + activeObjects.size() + "/" + freeObjects.size());
     }
+
+    public void stop() {
+        for (T item: getActiveObjects()) {
+            if (!item.isDestroyed()){
+                item.destroy();
+            }
+        }
+        freeAllDestroyed();
+    }
 }

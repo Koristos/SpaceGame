@@ -1,7 +1,6 @@
 package ru.fefelov.sprite.impl;
 
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,9 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ru.fefelov.math.Rect;
-import ru.fefelov.mech.Gun;
+import ru.fefelov.screen.impl.GameScreen;
 import ru.fefelov.sprite.Ship;
-import ru.fefelov.sprite.Sprite;
+import ru.fefelov.utils.Regions;
 
 public class Ufo extends Ship {
 
@@ -21,6 +20,7 @@ public class Ufo extends Ship {
     private final float MENU_HEIGHT = 0.2f;
     private final float GAME_MODE_HEIGHT = 0.08f;
     private final float SCALE = 0.99f;
+    private final int HP = 1;
 
     private Vector2 destination = new Vector2();
     static Vector2 move = new Vector2();
@@ -32,14 +32,22 @@ public class Ufo extends Ship {
     private boolean goLeftPressed = false;
     private boolean goRightPressed = false;
     private boolean shootingPressed = false;
+    private final GameScreen screen;
 
 
-    public Ufo(TextureAtlas atlas, boolean isGameMode) {
+    public Ufo(TextureAtlas atlas, boolean isGameMode, GameScreen screen) {
         super(atlas.findRegion("ufo"));
+        this.screen = screen;
         this.gameMode = isGameMode;
         this.flames.put("left", new UfoMoveFlame(atlas, UfoMoveFlame.DIRECTION.LEFT));
         this.flames.put("right", new UfoMoveFlame(atlas, UfoMoveFlame.DIRECTION.RIGHT));
         this.flames.put("center", new UfoMoveFlame(atlas, UfoMoveFlame.DIRECTION.CENTER));
+        this.isBlowing = false;
+        this.setHp(HP);
+    }
+
+    public void setExplosions(TextureRegion explosion){
+        this.explosions = Regions.split(explosion, 6, 8, 48);
     }
 
     @Override
@@ -74,18 +82,30 @@ public class Ufo extends Ship {
 
     @Override
     public void draw(SpriteBatch batch) {
-        calculateMovement(this.pos, this.destination);
-        if (shootingPressed){
-            shoot();
-            shootingPressed = false;
+        if (this.isDestroyed()){
+            return;
         }
-        for (Map.Entry<String, UfoMoveFlame> entry : flames.entrySet()) {
-            entry.getValue().setPosition(this.pos);
-            entry.getValue().draw(batch, this.move);
-        }
-        if (!enabled && gameMode) {
-            resizeToGameMode();
-            chekStartPosition();
+        if (isBlowing){
+            if (this.frame < this.explosions.length-1){
+                frame++;
+            } else {
+               this.screen.gameOver();
+               destroy();
+            }
+        }else {
+            calculateMovement(this.pos, this.destination);
+            if (shootingPressed){
+                shoot();
+                shootingPressed = false;
+            }
+            for (Map.Entry<String, UfoMoveFlame> entry : flames.entrySet()) {
+                entry.getValue().setPosition(this.pos);
+                entry.getValue().draw(batch, this.move);
+            }
+            if (!enabled && gameMode) {
+                resizeToGameMode();
+                chekStartPosition();
+            }
         }
         super.draw(batch);
     }

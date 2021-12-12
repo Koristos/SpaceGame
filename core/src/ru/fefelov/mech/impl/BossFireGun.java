@@ -1,6 +1,6 @@
 package ru.fefelov.mech.impl;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
@@ -19,7 +19,7 @@ public class BossFireGun extends Gun {
     private final Vector2 bulletThreeSpeed = new Vector2(-0.05f, -0.1f);
 
 
-    public BossFireGun (BulletPool pool, boolean isAlly, TextureAtlas atlas, Rect worldbounds, Sprite owner){
+    public BossFireGun (BulletPool pool, boolean isAlly, TextureAtlas atlas, Rect worldbounds, Sprite owner, Sound shootSound, Sound hitSound){
         setDamage(1);
         setRows(4);
         setCols(8);
@@ -30,7 +30,8 @@ public class BossFireGun extends Gun {
         setPool(pool);
         setTextureRegion(atlas.findRegion("bullet"));
         setFirstFrame(0);
-        setSound(Gdx.audio.newSound(Gdx.files.internal("music/plasm.mp3")));
+        setSound(shootSound);
+        setBlowSizeCoef(1.15f);
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task() {
             @Override
@@ -41,6 +42,7 @@ public class BossFireGun extends Gun {
             }
         }, 0, 1.8f);
         setTimer(timer);
+        setHitSound(hitSound);
     }
 
     @Override
@@ -48,13 +50,13 @@ public class BossFireGun extends Gun {
         if (readyToShoot){
             Bullet bulletOne = pool.obtain();
             bulletOne.set(owner, Regions.split(textureRegion, rows, cols, frames), owner.getPosition(),
-                    bulletOneSpeed, bulletHeight, worldBounds, damage, firstFrame);
+                    bulletOneSpeed, bulletHeight, worldBounds, damage, firstFrame, blowSizeCoef, hitSound);
             Bullet bulletTwo = pool.obtain();
             bulletTwo.set(owner, Regions.split(textureRegion, rows, cols, frames), owner.getPosition(),
-                    bulletTwoSpeed, bulletHeight, worldBounds, damage, firstFrame);
+                    bulletTwoSpeed, bulletHeight, worldBounds, damage, firstFrame, blowSizeCoef, hitSound);
             Bullet bulletThree = pool.obtain();
             bulletThree.set(owner, Regions.split(textureRegion, rows, cols, frames), owner.getPosition(),
-                    bulletThreeSpeed, bulletHeight, worldBounds, damage, firstFrame);
+                    bulletThreeSpeed, bulletHeight, worldBounds, damage, firstFrame, blowSizeCoef, hitSound);
             sound.play();
             this.readyToShoot = false;
         }
