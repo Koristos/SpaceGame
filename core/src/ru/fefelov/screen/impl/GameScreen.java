@@ -14,6 +14,7 @@ import ru.fefelov.pools.impl.EnemyPool;
 import ru.fefelov.screen.BaseScreen;
 import ru.fefelov.sprite.impl.Background;
 import ru.fefelov.sprite.impl.Bullet;
+import ru.fefelov.sprite.impl.ButtonNewGame;
 import ru.fefelov.sprite.impl.EnemyShip;
 import ru.fefelov.sprite.impl.Label;
 import ru.fefelov.sprite.impl.Star;
@@ -23,12 +24,15 @@ import ru.fefelov.utils.EnemyEmitter;
 
 public class GameScreen extends BaseScreen {
 
+    private final float MUSIC_VOLUME = 0.3f;
+
     private Texture backgroundPict;
     private TextureRegion explosions;
     private Vector2 position;
     private Background background;
     private Ufo ufo;
     private Label gameOver;
+    private ButtonNewGame ngb;
 
     private TextureAtlas ufoAtlas;
     private TextureAtlas atlas;
@@ -59,6 +63,8 @@ public class GameScreen extends BaseScreen {
         enemyEmitter = new EnemyEmitter(enemyAtlas, getWorldBounds(), enemyPool, bulletPool, bulletAtlas, explosions);
         gameOver = new Label(gameOverAtlas.findRegion("gameover"), new Vector2(0,0.2f),
                 Gdx.audio.newSound(Gdx.files.internal("music/gameover.mp3")));
+        ngb = new ButtonNewGame(gameOverAtlas.findRegion("newgame1"),
+                gameOverAtlas.findRegion("newgame2"), this);
         position = new Vector2();
         background = new Background(backgroundPict);
         stars = new Star[256];
@@ -71,7 +77,7 @@ public class GameScreen extends BaseScreen {
         music = Gdx.audio.newMusic(Gdx.files.internal("music/game.mp3"));
         music.setLooping(true);
         music.play();
-        music.setVolume(0.1f);
+        music.setVolume(MUSIC_VOLUME);
     }
 
     @Override
@@ -95,6 +101,7 @@ public class GameScreen extends BaseScreen {
         }
         ufo.draw(batch);
         gameOver.draw(batch);
+        ngb.draw(batch);
         enemyPool.drawActiveSprites(batch);
         bulletPool.drawActiveSprites(batch);
         batch.end();
@@ -122,18 +129,21 @@ public class GameScreen extends BaseScreen {
         }
         ufo.resize(worldBounds);
         gameOver.resize(worldBounds);
+        ngb.resize(worldBounds);
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         position.set(touch);
         ufo.touchDown(touch, pointer, button);
+        ngb.touchDown(touch,pointer,button);
         return super.touchDown(touch, pointer, button);
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
         position.set(touch);
+        ngb.touchUp(touch,pointer, button);
         return super.touchUp(touch, pointer, button);
     }
 
@@ -186,6 +196,17 @@ public class GameScreen extends BaseScreen {
         bulletPool.stop();
         enemyPool.stop();
         gameOver.activate();
+        ngb.enable();
+    }
+
+    public void newGame(){
+        ngb.disable();
+        gameOver.disable();
+        ufo.renew();
+        enemyEmitter.start();
+        music.play();
+        music.setVolume(MUSIC_VOLUME);
+
     }
 
 

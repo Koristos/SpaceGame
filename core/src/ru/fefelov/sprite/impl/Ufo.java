@@ -33,10 +33,12 @@ public class Ufo extends Ship {
     private boolean goRightPressed = false;
     private boolean shootingPressed = false;
     private final GameScreen screen;
+    private final TextureRegion [] mainVew;
 
 
     public Ufo(TextureAtlas atlas, boolean isGameMode, GameScreen screen) {
         super(atlas.findRegion("ufo"));
+        mainVew = this.regions;
         this.screen = screen;
         this.gameMode = isGameMode;
         this.flames.put("left", new UfoMoveFlame(atlas, UfoMoveFlame.DIRECTION.LEFT));
@@ -72,7 +74,7 @@ public class Ufo extends Ship {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        if (!enabled) return false;
+        if (!enabled || isDestroyed()) return false;
         if (isMe(touch)){
             shoot();
         }
@@ -214,5 +216,16 @@ public class Ufo extends Ship {
         } else {
             this.destination.y = destination.y;
         }
+    }
+
+    public void renew(){
+        setHp(HP);
+        this.destroyed = false;
+        this.isBlowing = false;
+        this.enabled = false;
+        this.regions = mainVew;
+        this.frame = 0;
+        this.pos.set(0,worldBounds.getBottom()-getHeight());
+        this.destination.set(0, worldBounds.getBottom() + GAME_MODE_HEIGHT);
     }
 }
