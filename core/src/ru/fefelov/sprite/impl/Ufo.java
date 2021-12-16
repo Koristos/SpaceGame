@@ -20,7 +20,7 @@ public class Ufo extends Ship {
     private final float MENU_HEIGHT = 0.2f;
     private final float GAME_MODE_HEIGHT = 0.08f;
     private final float SCALE = 0.99f;
-    private final int HP = 1;
+    private final int HP = 100;
 
     private Vector2 destination = new Vector2();
     static Vector2 move = new Vector2();
@@ -33,10 +33,12 @@ public class Ufo extends Ship {
     private boolean goRightPressed = false;
     private boolean shootingPressed = false;
     private final GameScreen screen;
+    private final TextureRegion [] mainVew;
 
 
     public Ufo(TextureAtlas atlas, boolean isGameMode, GameScreen screen) {
         super(atlas.findRegion("ufo"));
+        mainVew = this.regions;
         this.screen = screen;
         this.gameMode = isGameMode;
         this.flames.put("left", new UfoMoveFlame(atlas, UfoMoveFlame.DIRECTION.LEFT));
@@ -72,7 +74,7 @@ public class Ufo extends Ship {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        if (!enabled) return false;
+        if (!enabled || isDestroyed()) return false;
         if (isMe(touch)){
             shoot();
         }
@@ -179,6 +181,13 @@ public class Ufo extends Ship {
         if (move.len() > SPEED) {
             move.nor().scl(SPEED);
         }
+        if (destination.x - position.x < 0) {
+            this.screen.setUfoXmove(-SPEED);
+        }else if (destination.x - position.x > 0){
+            this.screen.setUfoXmove(SPEED);
+        }else if (destination.x - position.x == 0){
+            this.screen.setUfoXmove(0);
+        }
         position.add(move);
     }
 
@@ -214,5 +223,20 @@ public class Ufo extends Ship {
         } else {
             this.destination.y = destination.y;
         }
+    }
+
+    public void renew(){
+        setHp(HP);
+        this.destroyed = false;
+        this.isBlowing = false;
+        this.enabled = false;
+        this.regions = mainVew;
+        this.frame = 0;
+        this.pos.set(0,worldBounds.getBottom()-getHeight());
+        this.destination.set(0, worldBounds.getBottom() + GAME_MODE_HEIGHT);
+    }
+
+    public static Vector2 getMove() {
+        return move;
     }
 }

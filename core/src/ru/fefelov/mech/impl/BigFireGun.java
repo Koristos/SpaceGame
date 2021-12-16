@@ -15,8 +15,8 @@ public class BigFireGun extends Gun {
     private final float bulletSpeed = 0.14f;
 
 
-    public BigFireGun (BulletPool pool, boolean isAlly, TextureAtlas atlas, Rect worldbounds, Sprite owner, Sound shootSound, Sound hitSound){
-        setDamage(1);
+    public BigFireGun (BulletPool pool, boolean isAlly, TextureAtlas atlas, Rect worldbounds, Sprite owner, Sound shootSound, Sound hitSound, int damageMul){
+        setDamage(3+damageMul);
         setSpeed(new Vector2(0f, isAlly ? bulletSpeed : -bulletSpeed));
         setRows(4);
         setCols(8);
