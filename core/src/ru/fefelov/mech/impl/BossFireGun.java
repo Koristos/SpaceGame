@@ -19,8 +19,8 @@ public class BossFireGun extends Gun {
     private final Vector2 bulletThreeSpeed = new Vector2(-0.05f, -0.1f);
 
 
-    public BossFireGun (BulletPool pool, boolean isAlly, TextureAtlas atlas, Rect worldbounds, Sprite owner, Sound shootSound, Sound hitSound){
-        setDamage(1);
+    public BossFireGun (BulletPool pool, boolean isAlly, TextureAtlas atlas, Rect worldbounds, Sprite owner, Sound shootSound, Sound hitSound, int damageMul){
+        setDamage(5+damageMul);
         setRows(4);
         setCols(8);
         setFrames(29);

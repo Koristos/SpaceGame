@@ -100,7 +100,7 @@ public class EnemyShip extends Ship {
         }
 
         if (this.getTop() > worldBounds.getTop()){
-            move.y = move.y*5;
+            move.y = -0.2f;
         }
     }
 }

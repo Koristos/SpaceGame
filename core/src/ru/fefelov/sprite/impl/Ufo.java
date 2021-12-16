@@ -20,7 +20,7 @@ public class Ufo extends Ship {
     private final float MENU_HEIGHT = 0.2f;
     private final float GAME_MODE_HEIGHT = 0.08f;
     private final float SCALE = 0.99f;
-    private final int HP = 1;
+    private final int HP = 100;
 
     private Vector2 destination = new Vector2();
     static Vector2 move = new Vector2();
@@ -181,6 +181,13 @@ public class Ufo extends Ship {
         if (move.len() > SPEED) {
             move.nor().scl(SPEED);
         }
+        if (destination.x - position.x < 0) {
+            this.screen.setUfoXmove(-SPEED);
+        }else if (destination.x - position.x > 0){
+            this.screen.setUfoXmove(SPEED);
+        }else if (destination.x - position.x == 0){
+            this.screen.setUfoXmove(0);
+        }
         position.add(move);
     }
 
@@ -227,5 +234,9 @@ public class Ufo extends Ship {
         this.frame = 0;
         this.pos.set(0,worldBounds.getBottom()-getHeight());
         this.destination.set(0, worldBounds.getBottom() + GAME_MODE_HEIGHT);
+    }
+
+    public static Vector2 getMove() {
+        return move;
     }
 }
